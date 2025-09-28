@@ -25,74 +25,90 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Project setup
+# Product & Category API
+
+A NestJS project with Prisma for managing categories, products, and product items with multilingual content and pricing.
+
+## Features
+
+- Manage Categories (with subcategories and multilingual content)
+- Manage Products (linked to categories, with multilingual content)
+- Manage Product Items (with prices, variations, and multilingual content)
+- Search Products by name, description, price, and currency
+
+## Requirements
+
+- Node.js >= 18
+- PostgreSQL
+- npm or yarn
+
+## Setup Instructions
+
+### 1. Clone the repository
 
 ```bash
-$ npm install
+git clone <repo-url>
+cd <project-folder>
 ```
 
-## Compile and run the project
+### 2. Install dependencies
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Run tests
+or
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+yarn
 ```
 
-## Deployment
+### 3. Configure environment
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Create a `.env` file in the root:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+```env
+DATABASE_URL="postgresql://username:password@localhost:5432/dbname?schema=public"
+```
+
+Replace `username`, `password`, and `dbname` with your PostgreSQL credentials.
+
+### 4. Generate Prisma client
 
 ```bash
-$ npm install -g mau
-$ mau deploy
+npx prisma generate
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 5. Run migrations
 
-## Resources
+```bash
+npx prisma migrate dev --name init
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+This will create the database tables.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### 6. Start the server
 
-## Support
+```bash
+npm run start:dev
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+The API will be available at `http://localhost:3000`.
 
-## Stay in touch
+### 7. Testing
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+You can test the endpoints with **Postman** or any REST client. Example endpoints:
 
-## License
+- `POST /categories` – Create a category
+- `POST /products` – Create a product
+- `POST /product-items` – Create a product item
+- `GET /products/search?name=Smartphone&minPrice=100&maxPrice=500&currency=USD` – Search products
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### 8. Prisma Studio (optional)
+
+```bash
+npx prisma studio
+```
+
+Open a GUI to browse and edit your database.
+
