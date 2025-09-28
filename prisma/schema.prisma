@@ -1,0 +1,147 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Language {
+  AR
+  EN
+  FR
+}
+
+enum Currency {
+  TND
+  USD
+  EUR
+}
+
+model Category {
+  id               String     @id @default(uuid())
+  parentCategoryId String?
+  parentCategory   Category?  @relation("SubCategories", fields: [parentCategoryId], references: [id])
+  subCategories    Category[] @relation("SubCategories")
+
+  image        String?
+  displayOrder Int      @default(10000)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  contents CategoryContent[]
+  products ProductOnCategory[]
+}
+
+model CategoryContent {
+  id         String   @id @default(uuid())
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  name        String
+  slug        String
+  description String?
+  language    Language
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([slug, language])
+}
+
+model Product {
+  id           String   @id @default(uuid())
+  displayOrder Int      @default(10000)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  contents     ProductContent[]
+  categories   ProductOnCategory[]
+  productItems ProductItem[]
+}
+
+model ProductContent {
+  id        String  @id @default(uuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  name        String
+  slug        String
+  description String?
+  details     String?
+  language    Language
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([slug, language])
+}
+
+model ProductOnCategory {
+  productId  String
+  categoryId String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([productId, categoryId])
+}
+
+model ProductItem {
+  id        String  @id @default(uuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  barcode   String  @unique
+  reference String? @unique
+  image     String?
+  online    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  prices     ProductItemPrice[]
+  variations ProductItemVariation[]
+}
+
+model ProductItemPrice {
+  id            String      @id @default(uuid())
+  productItemId String
+  productItem   ProductItem @relation(fields: [productItemId], references: [id], onDelete: Cascade)
+
+  price    Decimal? @db.Decimal(10, 3)
+  currency Currency
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductItemVariation {
+  id            String      @id @default(uuid())
+  productItemId String
+  productItem   ProductItem @relation(fields: [productItemId], references: [id], onDelete: Cascade)
+
+  contents ProductItemVariationContent[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductItemVariationContent {
+  id                     String               @id @default(uuid())
+  productItemVariationId String
+  variation              ProductItemVariation @relation(fields: [productItemVariationId], references: [id], onDelete: Cascade)
+
+  name     String
+  value    String
+  language Language
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
